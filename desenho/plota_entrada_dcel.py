@@ -1,5 +1,6 @@
 import sys
 import matplotlib.pyplot as plt
+import matplotlib.cm as cm
 
 def ler_dados_arquivo(caminho_arquivo):
     with open(caminho_arquivo, 'r') as f:
@@ -24,6 +25,9 @@ def main():
     except Exception as e:
         print(f"Erro ao ler o arquivo: {e}")
         sys.exit(1)
+    
+    # Gerar uma paleta de cores com uma cor por face
+    cmap = cm.get_cmap('tab20', len(faces))
 
     # Plotar os vértices
     plt.figure(figsize=(8, 8))
@@ -31,12 +35,12 @@ def main():
         plt.plot(x, y, 'ko')
         plt.text(x + 0.1, y + 0.1, str(i + 1), fontsize=9, color='blue')
 
-    # Plotar as faces
-    for face in faces:
+    # Plotar faces 
+    for i, face in enumerate(faces):
         face_coords = [vertices[idx] for idx in face]
         face_coords.append(face_coords[0])  # Fechar o polígono
         xs, ys = zip(*face_coords)
-        plt.plot(xs, ys, linestyle='-', marker='', color='gray')
+        plt.plot(xs, ys, linestyle='-', marker='', color=cmap(i), linewidth=2)
 
     plt.title("Malha DCEL - Vértices e Faces")
     plt.axis('equal')
