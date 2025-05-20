@@ -32,15 +32,16 @@ template <typename T> struct poligono{
   tipo_p tipo{SEM_TIPO};
 };
 
-template <typename T> struct aresta_dcel{
-  ponto<T> ini, fim;  
-  u_int16_t qnt_faces{0};
-  u_int16_t dir{0};
-  u_int16_t esq{0};
+template <typename T> struct semi_aresta{
+  ponto<T> ini;  
+  semi_aresta* prox{NULL};
+  semi_aresta* ante{NULL};
+  semi_aresta* par{NULL};
+  face* face_incidente{NULL};
 };
 
 template <typename T> struct face{
-  std::vector<aresta<T>*> lados;
+  semi_aresta* semi_aresta_inicial{NULL};
   u_int32_t quant_lados{0};
 };
 
