@@ -32,8 +32,15 @@ template <typename T> struct poligono{
   tipo_p tipo{SEM_TIPO};
 };
 
+template <typename T> struct aresta_dcel{
+  ponto<T> ini, fim;  
+  u_int16_t qnt_faces{0};
+  u_int16_t dir{0};
+  u_int16_t esq{0};
+};
+
 template <typename T> struct face{
-  std::vector<aresta<T>> lados;
+  std::vector<aresta<T>*> lados;
   u_int32_t quant_lados{0};
 };
 
@@ -48,6 +55,15 @@ template<typename T> std::ostream& operator<<(std::ostream& os, const ponto<T>& 
 // Sobrecarga para impressao da aresta
 template<typename T> std::ostream& operator<<(std::ostream& os, const aresta<T>& a) {
   os << a.ini << " -> " << a.fim;
+  return os;
+}
+
+// Sobrecarga para impressao do poligono
+template<typename T> std::ostream& operator<<(std::ostream& os, const poligono<T>& p) {
+  os << "N vertices: " << p.vertices.size()<< " -> ";
+  for(int i=0; i< static_cast<int>(p.vertices.size()); i++)
+    os << p.vertices[i];  
+  
   return os;
 }
 
@@ -76,6 +92,10 @@ template <typename T> T prod_vetorial(ponto<T> a, ponto<T> b){
 template <typename T> T prod_escalar(ponto<T> a, ponto<T> b){
   return a.x * b.x + a.y * b.y;
 }
+
+// ================================= Funcoes gerais DCEL ==================================
+
+
 
 // =============================== Funcoes gerais poligonos ===============================
 

@@ -28,38 +28,40 @@ int main(){
   cin.ignore(); 
 
 
-  list<face<double>> lista_faces;
-  aresta<double> a;
+  list<poligono<double>> lista_poligonos;
 
   int v, v_ante, inicial;
   string linha;
-  for(int i=0; i<nFaces; i++){ //Le a face
-    face<double> f;
-    getline(cin, linha);       // lê a linha inteira
-    istringstream ss(linha);   // cria um stream da linha
+  for(int i=0; i<nFaces; i++){ // Le a face
+    poligono<double> p;        // Cria o poligono
+    getline(cin, linha);       // Le a linha inteira
+    istringstream ss(linha);   // Cria um stream da linha
 
     //le cada indice
     ss >> v_ante;
     inicial = v_ante;
     while (ss >> v) { 
       
-      //Monta as faces
-      a.ini = vetor_vertices[v_ante-1];
-      a.fim = vetor_vertices[v-1];
+      //Monta os poligonos 
+      //Descreve um poli. como a sequencia dos vertices em setido anti horario
+      p.vertices.push_back(vetor_vertices[v_ante-1]);
 
-      f.lados.push_back(a);
-      f.quant_lados++;
+      // a.ini = vetor_vertices[v_ante-1];
+      // a.fim = vetor_vertices[v-1];
+
+      // f.lados.push_back(a);
+      // f.quant_lados++;
 
       v_ante=v;
     }
     //Conecta com o primeiro vertice
-    a.ini = vetor_vertices[v_ante-1];
-    a.fim = vetor_vertices[inicial-1];
+    // a.ini = vetor_vertices[v_ante-1];
+    // a.fim = vetor_vertices[inicial-1];
 
-    f.lados.push_back(a);
-    f.quant_lados++;
+    // f.lados.push_back(a);
+    // f.quant_lados++;
 
-    lista_faces.push_back(f);
+    lista_poligonos.push_back(p);
 
   }//for i
 
@@ -69,15 +71,22 @@ int main(){
     cout<<"Vertice["<<i<<"] -> "<< vetor_vertices[i]<<"\n";
   }
 
-  cout<<"\nLista de faces.\n";
-  for(auto it{lista_faces.begin()}; it != lista_faces.end(); ++it){
-    
-    cout<<"Face["<<it->quant_lados<<"]: ";
-    for(int i = 0; i < static_cast<int> (it->quant_lados); i++)
-      cout<<it->lados[i]<<"  ";
-    
-    cout<<"\n";
+  cout<<"\nLista de Poligonos.\n";
+  for(auto it{lista_poligonos.begin()}; it != lista_poligonos.end(); ++it){
+    cout<<*(it)<<"\n";
   }
+  
+  
+
+  // cout<<"\nLista de faces.\n";
+  // for(auto it{lista_faces.begin()}; it != lista_faces.end(); ++it){
+    
+  //   cout<<"Face["<<it->quant_lados<<"]: ";
+  //   for(int i = 0; i < static_cast<int> (it->quant_lados); i++)
+  //     cout<<it->lados[i]<<"  ";
+    
+  //   cout<<"\n";
+  // }
   //#endif
 
   return 0;
