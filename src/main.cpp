@@ -1,10 +1,11 @@
 #include <iostream>
 #include <sstream>
+
 #include "poligono.hpp"
 #include "raycast.hpp"
+#include "dcel.hpp"
 
 using namespace std;
-
 
 int main(){
 
@@ -13,7 +14,9 @@ int main(){
   
   cin>>nVertices>>nFaces;
   
+  //Ambos vetores estao vinculados por seus indices
   vector<ponto<double>> vetor_vertices;
+  vector<semi_aresta<double>*> vetor_vertices_sa(nVertices, NULL);
 
   //Le os vertices 
   ponto<double> p;
@@ -28,11 +31,14 @@ int main(){
   cin.ignore(); 
 
 
+  //Criamos poligonos e faces
   list<poligono<double>> lista_poligonos;
-
+  semi_aresta<double> semi_aresta_anterior;
+  
   int v, v_ante, inicial;
   string linha;
   for(int i=0; i<nFaces; i++){ // Le a face
+
     poligono<double> p;        // Cria o poligono
     getline(cin, linha);       // Le a linha inteira
     istringstream ss(linha);   // Cria um stream da linha

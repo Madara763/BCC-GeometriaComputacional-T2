@@ -18,8 +18,6 @@
 #define VERTICE_ALINHADO 1
 #define VERTICE_AGUDO 2
 
-
-
 // ============================= Funcoes usadas no RayCasting =============================
 
 // Recebe um ponto, um poligono(vector de vertices) e um i, que e o numero do vertice analisado

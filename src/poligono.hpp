@@ -21,15 +21,38 @@ enum tipo_interseccao{EM_UM_PONTO, EM_UM_INTERVALO};
 
 template <typename T> struct ponto {
   T x, y; 
+
+  // Sobrecarga para impressao do ponto 
+  template<typename T> std::ostream& operator<<(std::ostream& os, const ponto<T>& p) {
+    os << "(" << p.x << ", " << p.y << ") ";
+    return os;
+  }
+
+
 };
 
 template <typename T> struct aresta{
   ponto<T> ini, fim; 
+
+  // Sobrecarga para impressao da aresta
+  template<typename T> std::ostream& operator<<(std::ostream& os, const aresta<T>& a) {
+    os << a.ini << " -> " << a.fim;
+    return os;
+  }
 };
 
 template <typename T> struct poligono{
   std::vector<ponto<T>> vertices;
   tipo_p tipo{SEM_TIPO};
+  
+  // Sobrecarga para impressao do poligono
+  template<typename T> std::ostream& operator<<(std::ostream& os, const poligono<T>& p) {
+    os << "N vertices: " << p.vertices.size()<< " -> ";
+    for(int i=0; i< static_cast<int>(p.vertices.size()); i++)
+      os << p.vertices[i];  
+  
+    return os;
+  }
 };
 
 template <typename T> struct semi_aresta{
@@ -46,27 +69,6 @@ template <typename T> struct face{
 };
 
 // ====================================== Auxiliares ======================================
-
-// Sobrecarga para impressao do ponto 
-template<typename T> std::ostream& operator<<(std::ostream& os, const ponto<T>& p) {
-  os << "(" << p.x << ", " << p.y << ") ";
-  return os;
-}
-
-// Sobrecarga para impressao da aresta
-template<typename T> std::ostream& operator<<(std::ostream& os, const aresta<T>& a) {
-  os << a.ini << " -> " << a.fim;
-  return os;
-}
-
-// Sobrecarga para impressao do poligono
-template<typename T> std::ostream& operator<<(std::ostream& os, const poligono<T>& p) {
-  os << "N vertices: " << p.vertices.size()<< " -> ";
-  for(int i=0; i< static_cast<int>(p.vertices.size()); i++)
-    os << p.vertices[i];  
-  
-  return os;
-}
 
 // Realiza a subtracao de dois vetores
 template <typename T> ponto<T> sub_point(ponto<T> p1, ponto<T> p2){
