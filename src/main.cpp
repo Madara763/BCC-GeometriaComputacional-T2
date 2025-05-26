@@ -13,33 +13,34 @@ int main(){
   int nVertices, nFaces; //Quantidade de vertices e faces respectivamente
   
   cin>>nVertices>>nFaces;
-  
+    
   //Ambos vetores estao vinculados por seus indices
-  vector<ponto<double>> vetor_vertices;
-  vector<semi_aresta<double>*> vetor_vertices_sa(nVertices, NULL);
+  vector<ponto<t_ponto>> vetor_vertices;
+  vector<semi_aresta<t_ponto>*> vetor_vertices_sa(nVertices, NULL);
 
   //Le os vertices 
-  ponto<double> p;
+  ponto<t_ponto> p;
   for(int i=0; i<nVertices; i++){
-  
     cin>>p.x>>p.y;
     vetor_vertices.push_back(p);
-  
   }//for i
 
   //descarta o fim da ultima linha, vamos ver linha inteiras daqui pra frente
   cin.ignore(); 
 
-
   //Criamos poligonos e faces
-  list<poligono<double>> lista_poligonos;
-  semi_aresta<double> semi_aresta_anterior;
+  list<poligono<t_ponto>> lista_poligonos;
+  semi_aresta<t_ponto> semi_aresta_anterior;
   
+  //Mapa para vincular indices dos vertices em um ordem a semiaresta 
+  //(chave, valor, funcao_hash)
+  unordered_map<pair<int, int>, semi_aresta<t_ponto>*, pair_hash> mapa_sa;
+
   int v, v_ante, inicial;
   string linha;
   for(int i=0; i<nFaces; i++){ // Le a face
 
-    poligono<double> p;        // Cria o poligono
+    poligono<t_ponto> p;        // Cria o poligono
     getline(cin, linha);       // Le a linha inteira
     istringstream ss(linha);   // Cria um stream da linha
 

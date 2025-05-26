@@ -7,6 +7,7 @@
 
 #include <vector>
 #include <iostream>
+#include <cmath>
 
 #ifndef _POLIGONO_
 #define _POLIGONO_
@@ -14,7 +15,11 @@
 // ====================================== Definicoes ======================================
 
 //Alterar o tipo confome implementacao
+#define t_ponto double 
 const double EPS = 1E-9;
+
+//Forward-declaration
+template <typename T> struct face;
 
 enum tipo_p{SEM_TIPO, CONVEXO, NAO_CONVEXO, NAO_SIMPLES };
 enum tipo_interseccao{EM_UM_PONTO, EM_UM_INTERVALO};
@@ -22,53 +27,73 @@ enum tipo_interseccao{EM_UM_PONTO, EM_UM_INTERVALO};
 template <typename T> struct ponto {
   T x, y; 
 
-  // Sobrecarga para impressao do ponto 
-  template<typename T> std::ostream& operator<<(std::ostream& os, const ponto<T>& p) {
-    os << "(" << p.x << ", " << p.y << ") ";
-    return os;
+  //Sobregarga comparacao de igualdade
+  bool operator==(const ponto<T>& outro) const {
+    if constexpr (std::is_floating_point<T>::value) 
+      return std::abs(x - outro.x) < EPS && std::abs(y - outro.y) < EPS;
+    else 
+      return x == outro.x && y == outro.y;
   }
-
-
 };
 
 template <typename T> struct aresta{
   ponto<T> ini, fim; 
-
-  // Sobrecarga para impressao da aresta
-  template<typename T> std::ostream& operator<<(std::ostream& os, const aresta<T>& a) {
-    os << a.ini << " -> " << a.fim;
-    return os;
-  }
 };
 
 template <typename T> struct poligono{
   std::vector<ponto<T>> vertices;
   tipo_p tipo{SEM_TIPO};
-  
-  // Sobrecarga para impressao do poligono
-  template<typename T> std::ostream& operator<<(std::ostream& os, const poligono<T>& p) {
-    os << "N vertices: " << p.vertices.size()<< " -> ";
-    for(int i=0; i< static_cast<int>(p.vertices.size()); i++)
-      os << p.vertices[i];  
-  
-    return os;
-  }
 };
 
 template <typename T> struct semi_aresta{
   ponto<T> ini;  
-  semi_aresta* prox{NULL};
-  semi_aresta* ante{NULL};
-  semi_aresta* par{NULL};
-  face* face_incidente{NULL};
+  semi_aresta<T>* prox{NULL};
+  semi_aresta<T>* ante{NULL};
+  semi_aresta<T>* par{NULL};
+  face<T>* face_incidente{NULL};
 };
 
 template <typename T> struct face{
-  semi_aresta* semi_aresta_inicial{NULL};
+  semi_aresta<T>* semi_aresta_inicial{NULL};
   u_int32_t quant_lados{0};
 };
 
 // ====================================== Auxiliares ======================================
+
+// Funcoes auxiliares para Hashing---------------------------------------------------------
+
+// Função de hash para std::pair<int, int>
+struct pair_hash {
+  size_t operator()(const pair<int, int>& p) const {
+    return hash<int>()(p.first) ^ (hash<int>()(p.second) << 1);
+  }
+};
+
+//Sobrecargas------------------------------------------------------------------------------
+
+// Sobrecarga para impressao do ponto 
+template<typename T> std::ostream& operator<<(std::ostream& os, const ponto<T>& p) {
+  os << "(" << p.x << ", " << p.y << ") ";
+  return os;
+}
+
+// Sobrecarga para impressao da aresta
+template<typename T> std::ostream& operator<<(std::ostream& os, const aresta<T>& a) {
+  os << a.ini << " -> " << a.fim;
+  return os;
+}
+
+// Sobrecarga para impressao do poligono
+template<typename T> std::ostream& operator<<(std::ostream& os, const poligono<T>& p) {
+  os << "N vertices: " << p.vertices.size()<< " -> ";
+  for(int i=0; i< static_cast<int>(p.vertices.size()); i++)
+    os << p.vertices[i];  
+  
+  return os;
+}
+
+
+//Calculo geometria------------------------------------------------------------------------
 
 // Realiza a subtracao de dois vetores
 template <typename T> ponto<T> sub_point(ponto<T> p1, ponto<T> p2){
