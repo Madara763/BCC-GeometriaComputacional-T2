@@ -26,9 +26,10 @@ semi_aresta<T>* cria_semiaresta(int ini, int fim, face<t_ponto>* face, semi_ares
                                 const std::vector<ponto<t_ponto>>& vv){
   
   //Par dos vertices
+  ini--; fim--; //ajusta de ordem de vertice para indice no vetor
   std::pair<int, int> par_ah{ini, fim}; //Anti-horario, as faces sao criadas assim 
   std::pair<int, int> par_ho{fim, ini}; //Horario, verifica o twin nesse sentido
-
+  
   // Verifica se ja esxite uma SA identica a essa nova
   // Se ja existe, duas faces estao usando a mesma semi-aresta
   // A verificacao nos poligonos deve evitar isso
@@ -48,7 +49,7 @@ semi_aresta<T>* cria_semiaresta(int ini, int fim, face<t_ponto>* face, semi_ares
   sa->ini = vv[ini];          //Indice em vv do ponto inicial dessa sa
   sa->ante = sa_anterior;     //Semi-Aresta anterior a essa nova
   sa->face_incidente = face;  //Ponteiro para a face a qual essa SA pertence
-  mapa_sa[par_ah] = sa;          //Adiciona no mapa de Semi_Aresta p/ quando criar o twin dessa poder achar essa
+  mapa_sa[par_ah] = sa;       //Adiciona no mapa de Semi_Aresta p/ quando criar o twin dessa poder achar essa
 
   //Se existe um anterior, adiciona esse como proximo do anterior 
   //Se for o primeiro sa_anterior eh nullptr
@@ -59,6 +60,8 @@ semi_aresta<T>* cria_semiaresta(int ini, int fim, face<t_ponto>* face, semi_ares
   if (mapa_sa.find(par_ho) != mapa_sa.end()) //Verifica se existe uma no lado oposto a essa
     sa->par = mapa_sa[par_ho];
 
+  std::cout<<"Criando uma SA: "<<*sa<<"\n";
+  
   return sa; //Retorna a SA nova
 }
 

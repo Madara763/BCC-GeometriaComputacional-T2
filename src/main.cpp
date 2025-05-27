@@ -30,7 +30,7 @@ int main(){
 
   //Criamos poligonos e faces
   list<poligono<t_ponto>> lista_poligonos;
-  list<face<t_ponto>> lista_faces;
+  list<face<t_ponto>*> lista_faces;
 
   semi_aresta<t_ponto> *sa_anterior, *sa_inicial, *sa_aux;
   
@@ -43,8 +43,10 @@ int main(){
   string linha;
   for(int i=0; i<nFaces; i++){ // Le as faces
 
-    poligono<t_ponto> p;       // Cria o poligono
-    face<t_ponto> f;           // Cria a face
+    poligono<t_ponto> p;                   // Cria o poligono
+    face<t_ponto> *f = new face<t_ponto>;  // Cria a face
+    if(!f){perror("Erro aloc main()\n"); return 1;}
+    
     eh_primeira_sa = true;
 
     getline(cin, linha);       // Le a linha inteira
@@ -65,24 +67,24 @@ int main(){
       if(eh_primeira_sa){
 
         eh_primeira_sa = false;
-        sa_inicial = cria_semiaresta<t_ponto>(v_ante, v, &f, nullptr, mapa_sa, vetor_vertices);
+        sa_inicial = cria_semiaresta<t_ponto>(v_ante, v, f, nullptr, mapa_sa, vetor_vertices);
         if(!sa_inicial){
           perror("Erro ao montar face no main()\n");
           return 1;
         }
         
-        f.semi_aresta_inicial = sa_inicial;
-        f.quant_lados ++;
+        f->semi_aresta_inicial = sa_inicial;
+        f->quant_lados ++;
         sa_anterior = sa_inicial;
 
       }
       else{
-        sa_aux = cria_semiaresta<t_ponto>(v_ante, v, &f, sa_anterior, mapa_sa, vetor_vertices);
+        sa_aux = cria_semiaresta<t_ponto>(v_ante, v, f, sa_anterior, mapa_sa, vetor_vertices);
         if(!sa_aux){
           perror("Erro ao montar face no main()\n");
           return 1;
         }
-        f.quant_lados ++;
+        f->quant_lados ++;
         sa_anterior = sa_aux;
       }
 
@@ -90,12 +92,12 @@ int main(){
     }
 
     //Conecta com o primeiro vertice da face
-    sa_aux = cria_semiaresta<t_ponto>(v, v_inicial, &f, sa_anterior, mapa_sa, vetor_vertices);
+    sa_aux = cria_semiaresta<t_ponto>(v_ante, v_inicial, f, sa_anterior, mapa_sa, vetor_vertices);
     if(!sa_aux){
       perror("Erro ao montar face no main()\n");
       return 1;
     }
-    f.quant_lados ++;
+    f->quant_lados ++;
 
     //Adiciona face e poligono nas listas
     lista_faces.push_back(f);  
@@ -115,13 +117,12 @@ int main(){
   }
   
   //Erro aqui ------------------
-  // face<t_ponto> f;
-  // lista_faces.push_back(f);
-
+  //face<t_ponto> f;
+  //lista_faces.push_back(f);
+  //Erro ao percorrer a lista circular de sa-----------------------------------
   // cout<<"\nLista de faces.\n";
-  // int i=0;
   // for(auto it{lista_faces.begin()}; it != lista_faces.end(); ++it){
-  //   cout<<*(it)<<"\n";
+  //   cout<<*(*(it))<<"\n\n";
   // }
   //#endif
 

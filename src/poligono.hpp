@@ -25,7 +25,7 @@ enum tipo_p{SEM_TIPO, CONVEXO, NAO_CONVEXO, NAO_SIMPLES };
 enum tipo_interseccao{EM_UM_PONTO, EM_UM_INTERVALO};
 
 template <typename T> struct ponto {
-  T x, y; 
+  T x{0}, y{0}; 
 
   //Sobregarga comparacao de igualdade
   bool operator==(const ponto<T>& outro) const {
@@ -47,14 +47,14 @@ template <typename T> struct poligono{
 
 template <typename T> struct semi_aresta{
   ponto<T> ini;  
-  semi_aresta<T>* prox{NULL};
-  semi_aresta<T>* ante{NULL};
-  semi_aresta<T>* par{NULL};
-  face<T>* face_incidente{NULL};
+  semi_aresta<T>* prox{nullptr};
+  semi_aresta<T>* ante{nullptr};
+  semi_aresta<T>* par{nullptr};
+  face<T>* face_incidente{nullptr};
 };
 
 template <typename T> struct face{
-  semi_aresta<T>* semi_aresta_inicial{NULL};
+  semi_aresta<T>* semi_aresta_inicial{nullptr};
   u_int32_t quant_lados{0};
 };
 
@@ -94,7 +94,12 @@ template<typename T> std::ostream& operator<<(std::ostream& os, const poligono<T
 
 // Sobrecarga para impressao da semi-aresta
 template<typename T> std::ostream& operator<<(std::ostream& os, const semi_aresta<T>& sa) {
-  os << sa.ini << " -> " ; //imprimir o sa.prox->ini
+  os <<"Semi-Aresta ("<<&sa<<")\n";
+  os <<"Ini: "<< sa.ini <<"\n"; 
+  (sa.prox == nullptr) ? os<<"Prox: nulo\n" : os<<"Prox: "<<sa.prox<<"\n"; 
+  (sa.ante == nullptr) ? os<<"Ante: nulo\n" : os<<"Ante: "<<sa.ante<<"\n"; 
+  (sa.par == nullptr) ? os<<"Twin: nulo\n" : os<<"Twin: "<<sa.par<<"\n"; 
+  (sa.face_incidente == nullptr) ? os<<"Face: nula\n" : os<<"Face: "<<sa.face_incidente<<"\n"; 
   return os;
 }
 
@@ -106,14 +111,14 @@ template<typename T> std::ostream& operator<<(std::ostream& os, const face<T>& f
     os << "[face vazia]";
     return os;
   }
-
+  //Erro ao percorrer a lista circular de sa-----------------------------------
   semi_aresta<T>* aux = f.semi_aresta_inicial;
-  os << "sa_ini: "<<*f.semi_aresta_inicial;
-  //Erro ao percorrer as SA-----------------------------------------------------------------------------
+  //os << "sa_ini: "<<*f.semi_aresta_inicial;
+
   // do {
-  //   //os << *(aux);
+  //   os << *(aux);
   //   aux = aux->prox;
-  // } while (aux != f.semi_aresta_inicial || aux == nullptr);
+  // } while (aux != f.semi_aresta_inicial);
 
   return os;
 }
