@@ -13,29 +13,53 @@
 #include "poligono.hpp"
 
 //Cria um semi aresta e preenche seus valores usando as informacoes dois maps
-template <typename T> semi_aresta<T>* cria_semiaresta(int ini, int fim, face<T> face, std::unordered_map<pair<int, int>, semi_aresta<t_ponto>*, pair_hash>& mapa_sa){
+//Parametros:
+//Ini e fim sao indices dos pontos iniciais e finais da SA em vv
+//Face eh um ponteiro para a face que tem essa SA nova
+//sa_anterior eh a Semi-Aresta anterio a essa nova na face
+//Mapa_sa eh um map que usa (ini, fim) como chaves para identificar as arestas com hashing
+//mapa_sa[ini,fim] eh pra ser diferente de mapa_sa[fim,ini]
+//Retorno: ponteiro para a sa criada e preenchida ou null em caso de erro
+template <typename T>
+semi_aresta<T>* cria_semiaresta(int ini, int fim, face<t_ponto>* face, semi_aresta<t_ponto>* sa_anterior,
+                                std::unordered_map<std::pair<int, int>, semi_aresta<t_ponto>*, pair_hash>& mapa_sa,
+                                const std::vector<ponto<t_ponto>>& vv){
   
-  if (ini<fim)
-    pair<int, int> crescente{ini, fim};
-  else
-    pair<int, int> decrescente{ini, fim};
-  
-  
-  //Verifica se ja existe uma semiaresta que use o par de vertices
-  //Se ja existe, duas faces estao usando a mesma aresta
-  //A verificacao nos poligonos deve evitar isso
-  if (mapa.find(par_vertices) != mapa.end()){ 
+  //Par dos vertices
+  std::pair<int, int> par_ah{ini, fim}; //Anti-horario, as faces sao criadas assim 
+  std::pair<int, int> par_ho{fim, ini}; //Horario, verifica o twin nesse sentido
+
+  // Verifica se ja esxite uma SA identica a essa nova
+  // Se ja existe, duas faces estao usando a mesma semi-aresta
+  // A verificacao nos poligonos deve evitar isso
+  if (mapa_sa.find(par_ah) != mapa_sa.end()){  
     //erro no bagulho, n devia estar aqui
-  }
-  else {
-    if (mapa.find(par_horario) != mapa.end()){
-
-    }
+    //Tentendo usar a mesma SA em outra face
+    perror("Tentando adicionar a mesma SA uma segunda vez.\n");
+    return NULL;
   }
 
+  semi_aresta<t_ponto>* sa = new semi_aresta<t_ponto> ; //Semi-Aresta
+  if(!sa){
+    perror("Erro de alocacao em cria_semiaresta()\n");
+    return NULL;
+  }
 
-                                                      
+  sa->ini = vv[ini];          //Indice em vv do ponto inicial dessa sa
+  sa->ante = sa_anterior;     //Semi-Aresta anterior a essa nova
+  sa->face_incidente = face;  //Ponteiro para a face a qual essa SA pertence
+  mapa_sa[par_ah] = sa;          //Adiciona no mapa de Semi_Aresta p/ quando criar o twin dessa poder achar essa
 
+  //Se existe um anterior, adiciona esse como proximo do anterior 
+  //Se for o primeiro sa_anterior eh nullptr
+  if(sa_anterior) 
+    sa_anterior->prox = sa;
+
+  //Existe um twin  
+  if (mapa_sa.find(par_ho) != mapa_sa.end()) //Verifica se existe uma no lado oposto a essa
+    sa->par = mapa_sa[par_ho];
+
+  return sa; //Retorna a SA nova
 }
 
 #endif

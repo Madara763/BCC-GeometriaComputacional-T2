@@ -30,44 +30,75 @@ int main(){
 
   //Criamos poligonos e faces
   list<poligono<t_ponto>> lista_poligonos;
-  semi_aresta<t_ponto> semi_aresta_anterior;
+  list<face<t_ponto>> lista_faces;
+
+  semi_aresta<t_ponto> *sa_anterior, *sa_inicial, *sa_aux;
   
   //Mapa para vincular indices dos vertices em um ordem a semiaresta 
   //(chave, valor, funcao_hash)
   unordered_map<pair<int, int>, semi_aresta<t_ponto>*, pair_hash> mapa_sa;
 
-  int v, v_ante, inicial;
+  int v, v_ante, v_inicial;
+  bool eh_primeira_sa;
   string linha;
-  for(int i=0; i<nFaces; i++){ // Le a face
+  for(int i=0; i<nFaces; i++){ // Le as faces
 
-    poligono<t_ponto> p;        // Cria o poligono
+    poligono<t_ponto> p;       // Cria o poligono
+    face<t_ponto> f;           // Cria a face
+    eh_primeira_sa = true;
+
     getline(cin, linha);       // Le a linha inteira
     istringstream ss(linha);   // Cria um stream da linha
 
     //le cada indice
+    //le o primeiro vertice e salva
     ss >> v_ante;
-    inicial = v_ante;
+    v_inicial = v_ante;
+
     while (ss >> v) { 
       
       //Monta os poligonos 
       //Descreve um poli. como a sequencia dos vertices em setido anti horario
       p.vertices.push_back(vetor_vertices[v_ante-1]);
+      
+      //Monta as SA na face
+      if(eh_primeira_sa){
 
-      // a.ini = vetor_vertices[v_ante-1];
-      // a.fim = vetor_vertices[v-1];
+        eh_primeira_sa = false;
+        sa_inicial = cria_semiaresta<t_ponto>(v_ante, v, &f, nullptr, mapa_sa, vetor_vertices);
+        if(!sa_inicial){
+          perror("Erro ao montar face no main()\n");
+          return 1;
+        }
+        
+        f.semi_aresta_inicial = sa_inicial;
+        f.quant_lados ++;
+        sa_anterior = sa_inicial;
 
-      // f.lados.push_back(a);
-      // f.quant_lados++;
+      }
+      else{
+        sa_aux = cria_semiaresta<t_ponto>(v_ante, v, &f, sa_anterior, mapa_sa, vetor_vertices);
+        if(!sa_aux){
+          perror("Erro ao montar face no main()\n");
+          return 1;
+        }
+        f.quant_lados ++;
+        sa_anterior = sa_aux;
+      }
 
       v_ante=v;
     }
-    //Conecta com o primeiro vertice
-    // a.ini = vetor_vertices[v_ante-1];
-    // a.fim = vetor_vertices[inicial-1];
 
-    // f.lados.push_back(a);
-    // f.quant_lados++;
+    //Conecta com o primeiro vertice da face
+    sa_aux = cria_semiaresta<t_ponto>(v, v_inicial, &f, sa_anterior, mapa_sa, vetor_vertices);
+    if(!sa_aux){
+      perror("Erro ao montar face no main()\n");
+      return 1;
+    }
+    f.quant_lados ++;
 
+    //Adiciona face e poligono nas listas
+    lista_faces.push_back(f);  
     lista_poligonos.push_back(p);
 
   }//for i
@@ -83,16 +114,14 @@ int main(){
     cout<<*(it)<<"\n";
   }
   
-  
+  //Erro aqui ------------------
+  // face<t_ponto> f;
+  // lista_faces.push_back(f);
 
   // cout<<"\nLista de faces.\n";
+  // int i=0;
   // for(auto it{lista_faces.begin()}; it != lista_faces.end(); ++it){
-    
-  //   cout<<"Face["<<it->quant_lados<<"]: ";
-  //   for(int i = 0; i < static_cast<int> (it->quant_lados); i++)
-  //     cout<<it->lados[i]<<"  ";
-    
-  //   cout<<"\n";
+  //   cout<<*(it)<<"\n";
   // }
   //#endif
 

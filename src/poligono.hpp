@@ -64,8 +64,8 @@ template <typename T> struct face{
 
 // Função de hash para std::pair<int, int>
 struct pair_hash {
-  size_t operator()(const pair<int, int>& p) const {
-    return hash<int>()(p.first) ^ (hash<int>()(p.second) << 1);
+  size_t operator()(const std::pair<int, int>& p) const {
+    return std::hash<int>()(p.first) ^ (std::hash<int>()(p.second) << 1);
   }
 };
 
@@ -85,10 +85,36 @@ template<typename T> std::ostream& operator<<(std::ostream& os, const aresta<T>&
 
 // Sobrecarga para impressao do poligono
 template<typename T> std::ostream& operator<<(std::ostream& os, const poligono<T>& p) {
-  os << "N vertices: " << p.vertices.size()<< " -> ";
+  os << "N vertices: " << p.vertices.size()<< " --> ";
   for(int i=0; i< static_cast<int>(p.vertices.size()); i++)
     os << p.vertices[i];  
   
+  return os;
+}
+
+// Sobrecarga para impressao da semi-aresta
+template<typename T> std::ostream& operator<<(std::ostream& os, const semi_aresta<T>& sa) {
+  os << sa.ini << " -> " ; //imprimir o sa.prox->ini
+  return os;
+}
+
+// Sobrecarga para impressao da face
+template<typename T> std::ostream& operator<<(std::ostream& os, const face<T>& f) {
+  os << "N lados: " << f.quant_lados << " --> ";
+
+  if (f.semi_aresta_inicial == nullptr) {
+    os << "[face vazia]";
+    return os;
+  }
+
+  semi_aresta<T>* aux = f.semi_aresta_inicial;
+  os << "sa_ini: "<<*f.semi_aresta_inicial;
+  //Erro ao percorrer as SA-----------------------------------------------------------------------------
+  // do {
+  //   //os << *(aux);
+  //   aux = aux->prox;
+  // } while (aux != f.semi_aresta_inicial || aux == nullptr);
+
   return os;
 }
 
