@@ -113,18 +113,16 @@ template<typename T> std::ostream& operator<<(std::ostream& os, const face<T>& f
     os << "[face vazia]";
     return os;
   }
-  //Erro ao percorrer a lista circular de sa-----------------------------------
-  semi_aresta<T>* aux = f.semi_aresta_inicial;
-  //os << "sa_ini: "<<*f.semi_aresta_inicial;
 
-  // do {
-  //   os << *(aux);
-  //   aux = aux->prox;
-  // } while (aux != f.semi_aresta_inicial);
+  semi_aresta<T>* aux = f.semi_aresta_inicial;
+
+  do {
+    os << *aux;
+    aux = aux->prox;
+  } while (aux != f.semi_aresta_inicial);
 
   return os;
 }
-
 
 //Calculo geometria------------------------------------------------------------------------
 

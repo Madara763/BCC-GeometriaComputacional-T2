@@ -68,7 +68,7 @@ int main(){
 
         eh_primeira_sa = false;
         sa_inicial = cria_semiaresta<t_ponto>(v_ante, v, f, nullptr, mapa_sa, vetor_vertices, &nsp);
-        if(!sa_aux){
+        if(!sa_inicial){
           if(nsp){
             cout<<"não subdivisão planar\n";
             return 0;
@@ -136,10 +136,6 @@ int main(){
     cout<<*(it)<<"\n";
   }
   
-  //Erro aqui ------------------
-  //face<t_ponto> f;
-  //lista_faces.push_back(f);
-  //Erro ao percorrer a lista circular de sa-----------------------------------
   cout<<"\nLista de faces.\n";
   for(auto it{lista_faces.begin()}; it != lista_faces.end(); ++it){
     cout<<*(*(it))<<"\n\n";
@@ -152,15 +148,15 @@ int main(){
   }
 
   // verifica se alguma aresta intersecta a sua ou outras faces
-  if(possuem_Intersecao(lista_poligonos, mapa_sa)) {
-    std::cout << "superposta\n";
-    return 0;
-  }
+  // if(possuem_Intersecao(lista_poligonos, mapa_sa)) {
+  //   cout << "superposta\n";
+  //   return 0;
+  // }
 
-  if(ha_faces_sobrepostas<t_ponto>(lista_poligonos)) {
-    cout << "superposta\n";
-    return 0;
-  }
+  // if(ha_faces_sobrepostas<t_ponto>(lista_poligonos)) {
+  //   cout << "superposta\n";
+  //   return 0;
+  // }
 
   return 0;
 }
