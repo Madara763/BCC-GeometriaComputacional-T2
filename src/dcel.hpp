@@ -25,7 +25,7 @@
 template <typename T>
 semi_aresta<T>* cria_semiaresta(int ini, int fim, face<t_ponto>* face, semi_aresta<t_ponto>* sa_anterior,
                                 std::unordered_map<std::pair<int, int>, semi_aresta<t_ponto>*, pair_hash>& mapa_sa,
-                                const std::vector<ponto<t_ponto>>& vv, int* nsp, std::vector<semi_aresta<t_ponto>*>& vetor_vertices_sa){
+                                const std::vector<ponto<t_ponto>>& vv, int* nsp, std::vector<int>& vetor_vertices_sa){
   
   //Par dos vertices
   ini--; fim--; //ajusta de ordem de vertice para indice no vetor
@@ -49,13 +49,11 @@ semi_aresta<T>* cria_semiaresta(int ini, int fim, face<t_ponto>* face, semi_ares
     return NULL;
   }
 
+  sa->index = ini+1;
   sa->ini = vv[ini];          //Indice em vv do ponto inicial dessa sa
   sa->ante = sa_anterior;     //Semi-Aresta anterior a essa nova
   sa->face_incidente = face;  //Ponteiro para a face a qual essa SA pertence
   mapa_sa[par_ah] = sa;       //Adiciona no mapa de Semi_Aresta p/ quando criar o twin dessa poder achar essa
-
-  //Se nao tem nenhuma SA registrada como inicio nesse vertice, adiciona a primeira
-  if(!vetor_vertices_sa[ini]){ vetor_vertices_sa[ini] = sa; }
 
   //Se existe um anterior, adiciona esse como proximo do anterior 
   //Se for o primeiro sa_anterior eh nullptr
@@ -81,6 +79,9 @@ semi_aresta<T>* cria_semiaresta(int ini, int fim, face<t_ponto>* face, semi_ares
   std::cout<<"Criando uma SA em cria_semiaresta(): "<<*sa<<"\n";
   #endif
 
+  //Se nao tem nenhuma SA registrada como inicio nesse vertice, adiciona a primeira
+  if(!vetor_vertices_sa[ini]){ vetor_vertices_sa[ini] = sa->id; }
+  
   return sa; //Retorna a SA nova
 }
 
@@ -100,6 +101,40 @@ template <typename T> bool todas_tem_twin(const std::list<face<T>*>& lista_faces
   return true; // todas têm twin
 }
 
-//void imprime_saida_trabalho()
+template <typename T> void imprime_saida_trabalho(int nv, int nf, const std::vector<ponto<t_ponto>>& vv, std::vector<int>& vetor_vertices_sa, const std::list<face<T>*>& lista_faces){
+  u_int64_t quant_arestas{0};
+  //imprime o ind da primeira SA das lista de faces
+  for (const face<T>* f : lista_faces) {
+    if (!f || !f->semi_aresta_inicial) continue;
+    quant_arestas += f->quant_lados;
+  }
+  quant_arestas = quant_arestas/2;
+
+  std::cout<<nv<<" "<<quant_arestas<<" "<<nf<<"\n";
+  
+  //Imprime o vetor de vertices e o ind da SA que inicia nele
+  for (size_t i = 0;  i != vv.size(); i++) {
+    std::cout<<vv[i]<<" "<<vetor_vertices_sa[i]<<"\n";
+  }
+
+  //imprime o ind da primeira SA das lista de faces
+  for (const face<T>* f : lista_faces) {
+    if (!f || !f->semi_aresta_inicial) continue;
+    std::cout<<f->semi_aresta_inicial->index<<"\n"; 
+  }
+
+  //imprime as SA das lista de faces
+  for (const face<T>* f : lista_faces) {
+    if (!f || !f->semi_aresta_inicial) continue;
+
+    const semi_aresta<T>* sa = f->semi_aresta_inicial;
+    const semi_aresta<T>* atual = sa;
+
+    do {
+      std::cout<<*atual<<"\n";
+      atual = atual->prox;
+    } while (atual != sa); // ciclo circular
+  }
+}
 
 #endif

@@ -16,7 +16,7 @@ int main(){
     
   //Ambos vetores estao vinculados por seus indices
   vector<ponto<t_ponto>> vetor_vertices;
-  vector<semi_aresta<t_ponto>*> vetor_vertices_sa(nVertices, NULL);
+  vector<int> vetor_vertices_sa(nVertices, 0);
 
   //Le os vertices 
   ponto<t_ponto> p;
@@ -183,5 +183,7 @@ int main(){
     return 0;
   }
   
+  imprime_saida_trabalho(nVertices, nFaces, vetor_vertices, vetor_vertices_sa, lista_faces);
+
   return 0;
 }

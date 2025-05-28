@@ -48,18 +48,35 @@ template <typename T> struct poligono{
 };
 
 template <typename T> struct semi_aresta{
-  static id;
-  ponto<T> ini;  
+
+  static int proximo_id;
+  int id;  // id único da instância
+
+  ponto<T> ini;
+  int index{0};
   semi_aresta<T>* prox{nullptr};
   semi_aresta<T>* ante{nullptr};
   semi_aresta<T>* par{nullptr};
   face<T>* face_incidente{nullptr};
+
+  // Construtor
+  semi_aresta() : id(proximo_id++) {} // cada instância recebe um ID único
 };
 
+template <typename T> int semi_aresta<T>::proximo_id = 0; //Inicializa os id da semi_aresta
+
 template <typename T> struct face{
+  static int proximo_id;
+  int id;  // id único da instância
+
   semi_aresta<T>* semi_aresta_inicial{nullptr};
   u_int32_t quant_lados{0};
+
+  // Construtor
+  face() : id(proximo_id++) {} // cada instância recebe um ID único
 };
+
+template <typename T> int face<T>::proximo_id = 0; //Inicializa os id da face
 
 // ====================================== Auxiliares ======================================
 
@@ -76,7 +93,11 @@ struct pair_hash {
 
 // Sobrecarga para impressao do ponto 
 template<typename T> std::ostream& operator<<(std::ostream& os, const ponto<T>& p) {
+  #ifdef DEBUG
   os << "(" << p.x << ", " << p.y << ") ";
+  #else
+  os << p.x <<" "<< p.y ;
+  #endif
   return os;
 }
 
@@ -97,12 +118,16 @@ template<typename T> std::ostream& operator<<(std::ostream& os, const poligono<T
 
 // Sobrecarga para impressao da semi-aresta
 template<typename T> std::ostream& operator<<(std::ostream& os, const semi_aresta<T>& sa) {
-  os <<"Semi-Aresta ("<<&sa<<")\n";
-  os <<"Ini: "<< sa.ini <<"\n"; 
+  #ifdef DEBUG
+  os <<"Semi-Aresta ("<<sa.id<<")\n";
+  os <<"Ini: "<< sa.ini <<"["<<sa.index<<"]\n"; 
   (sa.prox == nullptr) ? os<<"Prox: nulo\n" : os<<"Prox: "<<sa.prox<<"\n"; 
   (sa.ante == nullptr) ? os<<"Ante: nulo\n" : os<<"Ante: "<<sa.ante<<"\n"; 
   (sa.par == nullptr) ? os<<"Twin: nulo\n" : os<<"Twin: "<<sa.par<<"\n"; 
   (sa.face_incidente == nullptr) ? os<<"Face: nula\n" : os<<"Face: "<<sa.face_incidente<<"\n"; 
+  #else
+  os << sa.id <<" "<<sa.par->id<<" "<<sa.face_incidente->id<<" "<<sa.prox->id<<" "<<sa.ante->id;
+  #endif
   return os;
 }
 
@@ -210,7 +235,7 @@ template <typename T> int tem_Intersecao(aresta<T> v, aresta<T> w, aresta<T> *in
   tNum = prod_vetorial(sub_point(q, p), s);
   denom = prod_vetorial(r, s);
 
-  #ifdef DEBUG        
+  #ifdef DEBUG_POL       
   std::cout << "p: " << p.x << " " << p.y << "\n";
   std::cout << "q: " << q.x << " " << q.y << "\n";
   std::cout << "r: " << r.x << " " << r.y << "\n";
@@ -240,7 +265,7 @@ template <typename T> int tem_Intersecao(aresta<T> v, aresta<T> w, aresta<T> *in
       if(t_start <= t_end) {
           auto start = sum_point(p, {static_cast<double>(t_start * r.x), static_cast<double>(t_start * r.y)});
           auto end = sum_point(p, {static_cast<double>(t_end * r.x), static_cast<double>(t_end * r.y)});
-          #ifdef DEBUG
+          #ifdef DEBUG_POL
           std::cout << "Colineares e coincidentes entre (" << start.x << "," << start.y << ") e (" << end.x << "," << end.y << ")\n"; 
           #endif
           intersecao->ini = start;
@@ -251,7 +276,7 @@ template <typename T> int tem_Intersecao(aresta<T> v, aresta<T> w, aresta<T> *in
           return 2;
       } 
       else { // colineares e disjuntos
-          #ifdef DEBUG
+          #ifdef DEBUG_POL
           std::cout << "Colineares e disjuntos" << "\n";
           #endif
           return -1;
@@ -259,7 +284,7 @@ template <typename T> int tem_Intersecao(aresta<T> v, aresta<T> w, aresta<T> *in
   } 
   //r × s = 0 and (q − p) × r ≠ 0: paralelas e nao coincidentes
   else if(denom == 0 && prod_vetorial(sub_point(q, p) , r) != 0) {
-      #ifdef DEBUG
+      #ifdef DEBUG_POL
       std::cout << "Paralelas e nao coincidentes" << "\n";
       #endif
       return -1;
@@ -270,7 +295,7 @@ template <typename T> int tem_Intersecao(aresta<T> v, aresta<T> w, aresta<T> *in
       u = uNum / denom;
       t = tNum / denom;
       
-      #ifdef DEBUG        
+      #ifdef DEBUG_POL        
       std::cout << "uNum: " << uNum << "\n";
       std::cout << "tNum: " << tNum << "\n";
       std::cout << "u: " << u << "\n";
@@ -282,7 +307,7 @@ template <typename T> int tem_Intersecao(aresta<T> v, aresta<T> w, aresta<T> *in
 
       if(u >= 0 && u <= 1 && t >= 0 && t <= 1) {
         ponto<T> pInt = sum_point(p, tr);
-          #ifdef DEBUG
+          #ifdef DEBUG_POL
           std::cout << "Se intersectam em (" << pInt.x << "," << pInt.y << ")\n";
           #endif
           intersecao->ini = pInt;
