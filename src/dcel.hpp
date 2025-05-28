@@ -19,12 +19,13 @@
 //sa_anterior eh a Semi-Aresta anterio a essa nova na face
 //Mapa_sa eh um map que usa (ini, fim) como chaves para identificar as arestas com hashing
 //mapa_sa[ini,fim] eh pra ser diferente de mapa_sa[fim,ini]
-//nsp eh um booleano que indica que estou criando uma SA pela segunda vez, ou seja, existe uma face usando a mesma regiao do espaco que outra, faz parte do retorno
+//nsp eh um inteiro que quando == 1 indica que estou criando uma SA pela segunda vez, ou seja, existe uma face usando a mesma regiao do espaco que outra, faz parte do retorno
+//E quando == 2 indica superposicao
 //Retorno: ponteiro para a sa criada e preenchida ou null em caso de erro
 template <typename T>
 semi_aresta<T>* cria_semiaresta(int ini, int fim, face<t_ponto>* face, semi_aresta<t_ponto>* sa_anterior,
                                 std::unordered_map<std::pair<int, int>, semi_aresta<t_ponto>*, pair_hash>& mapa_sa,
-                                const std::vector<ponto<t_ponto>>& vv, bool* nsp, std::vector<semi_aresta<t_ponto>*>& vetor_vertices_sa){
+                                const std::vector<ponto<t_ponto>>& vv, int* nsp, std::vector<semi_aresta<t_ponto>*>& vetor_vertices_sa){
   
   //Par dos vertices
   ini--; fim--; //ajusta de ordem de vertice para indice no vetor
@@ -38,7 +39,7 @@ semi_aresta<T>* cria_semiaresta(int ini, int fim, face<t_ponto>* face, semi_ares
     //erro no bagulho, n devia estar aqui
     //Tentendo usar a mesma SA em outra face
     //Ativa a flag de que caiu em uma NSP
-    *nsp = true; 
+    *nsp = 1; 
     return NULL;
   }
 
@@ -68,9 +69,9 @@ semi_aresta<T>* cria_semiaresta(int ini, int fim, face<t_ponto>* face, semi_ares
     mapa_sa[par_ho]->par = sa;
 
     //Caiu aqui pq a aresta vai e vem na mesma face
-    //Nao subdivisao planar
+    //retorna superposta
     if(mapa_sa[par_ho]->face_incidente == sa->face_incidente){
-      *nsp = true; //retorna nao subdivisao planar
+      *nsp = 2;    //retorna superposta
       return NULL; //nao cria a aresta
     }
 
@@ -99,6 +100,6 @@ template <typename T> bool todas_tem_twin(const std::list<face<T>*>& lista_faces
   return true; // todas têm twin
 }
 
-void imprime
+//void imprime_saida_trabalho()
 
 #endif

@@ -48,6 +48,7 @@ template <typename T> struct poligono{
 };
 
 template <typename T> struct semi_aresta{
+  static id;
   ponto<T> ini;  
   semi_aresta<T>* prox{nullptr};
   semi_aresta<T>* ante{nullptr};

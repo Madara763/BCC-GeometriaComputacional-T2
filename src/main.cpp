@@ -38,8 +38,8 @@ int main(){
   //(chave, valor, funcao_hash)
   unordered_map<pair<int, int>, semi_aresta<t_ponto>*, pair_hash> mapa_sa;
 
-  int v, v_ante, v_inicial;
-  bool eh_primeira_sa, nsp;
+  int v, v_ante, v_inicial, nsp{0};
+  bool eh_primeira_sa;
   string linha;
   for(int i=0; i<nFaces; i++){ // Le as faces
 
@@ -69,12 +69,19 @@ int main(){
         eh_primeira_sa = false;
         sa_inicial = cria_semiaresta<t_ponto>(v_ante, v, f, nullptr, mapa_sa, vetor_vertices, &nsp, vetor_vertices_sa);
         if(!sa_inicial){
-          if(nsp){
+          switch (nsp){
+          case 1:
             cout<<"não subdivisão planar\n";
-            return 0;
+            break;
+          case 2:
+            cout<<"superposta\n";
+            break;
+          default:
+            perror("Erro ao montar face no main()\n");
+            return 1;
+            break;
           }
-          perror("Erro ao montar face no main()\n");
-          return 1;
+          return 0;
         }
         
         f->semi_aresta_inicial = sa_inicial;
@@ -85,12 +92,19 @@ int main(){
       else{
         sa_aux = cria_semiaresta<t_ponto>(v_ante, v, f, sa_anterior, mapa_sa, vetor_vertices, &nsp, vetor_vertices_sa);
         if(!sa_aux){
-          if(nsp){
+          switch (nsp){
+          case 1:
             cout<<"não subdivisão planar\n";
-            return 0;
+            break;
+          case 2:
+            cout<<"superposta\n";
+            break;
+          default:
+            perror("Erro ao montar face no main()\n");
+            return 1;
+            break;
           }
-          perror("Erro ao montar face no main()\n");
-          return 1;
+          return 0;
         }
         f->quant_lados ++;
         sa_anterior = sa_aux;
@@ -103,12 +117,19 @@ int main(){
     //Conecta com o primeiro vertice da face
     sa_aux = cria_semiaresta<t_ponto>(v_ante, v_inicial, f, sa_anterior, mapa_sa, vetor_vertices, &nsp, vetor_vertices_sa);
     if(!sa_aux){
-      if(nsp){
-        cout<<"não subdivisão planar\n";
-        return 0;
+      switch (nsp){
+      case 1:
+        cout << "não subdivisão planar\n";
+        break;
+      case 2:
+        cout << "superposta\n";
+        break;
+      default:
+        perror("Erro ao montar face no main()\n");
+        return 1;
+        break;
       }
-      perror("Erro ao montar face no main()\n");
-      return 1;
+      return 0;
     }
     
     //Faces
@@ -157,6 +178,6 @@ int main(){
   //   cout << "superposta\n";
   //   return 0;
   // }
-  
+
   return 0;
 }
