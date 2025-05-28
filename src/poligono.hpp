@@ -53,7 +53,8 @@ template <typename T> struct semi_aresta{
   int id;  // id único da instância
 
   ponto<T> ini;
-  int index{0};
+  int index{0}; //ind do ponto no vetor principal
+
   semi_aresta<T>* prox{nullptr};
   semi_aresta<T>* ante{nullptr};
   semi_aresta<T>* par{nullptr};
@@ -63,7 +64,7 @@ template <typename T> struct semi_aresta{
   semi_aresta() : id(proximo_id++) {} // cada instância recebe um ID único
 };
 
-template <typename T> int semi_aresta<T>::proximo_id = 0; //Inicializa os id da semi_aresta
+template <typename T> int semi_aresta<T>::proximo_id = 1; //Inicializa os id da semi_aresta
 
 template <typename T> struct face{
   static int proximo_id;
@@ -76,7 +77,7 @@ template <typename T> struct face{
   face() : id(proximo_id++) {} // cada instância recebe um ID único
 };
 
-template <typename T> int face<T>::proximo_id = 0; //Inicializa os id da face
+template <typename T> int face<T>::proximo_id = 1; //Inicializa os id da face
 
 // ====================================== Auxiliares ======================================
 
@@ -126,7 +127,7 @@ template<typename T> std::ostream& operator<<(std::ostream& os, const semi_arest
   (sa.par == nullptr) ? os<<"Twin: nulo\n" : os<<"Twin: "<<sa.par<<"\n"; 
   (sa.face_incidente == nullptr) ? os<<"Face: nula\n" : os<<"Face: "<<sa.face_incidente<<"\n"; 
   #else
-  os << sa.id <<" "<<sa.par->id<<" "<<sa.face_incidente->id<<" "<<sa.prox->id<<" "<<sa.ante->id;
+  os << sa.index+1 <<" "<<sa.par->id<<" "<<sa.face_incidente->id<<" "<<sa.prox->id<<" "<<sa.ante->id; //------------------------------- tem um +1 aqui
   #endif
   return os;
 }

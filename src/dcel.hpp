@@ -49,7 +49,7 @@ semi_aresta<T>* cria_semiaresta(int ini, int fim, face<t_ponto>* face, semi_ares
     return NULL;
   }
 
-  sa->index = ini+1;
+  sa->index = ini;
   sa->ini = vv[ini];          //Indice em vv do ponto inicial dessa sa
   sa->ante = sa_anterior;     //Semi-Aresta anterior a essa nova
   sa->face_incidente = face;  //Ponteiro para a face a qual essa SA pertence
@@ -80,7 +80,7 @@ semi_aresta<T>* cria_semiaresta(int ini, int fim, face<t_ponto>* face, semi_ares
   #endif
 
   //Se nao tem nenhuma SA registrada como inicio nesse vertice, adiciona a primeira
-  if(!vetor_vertices_sa[ini]){ vetor_vertices_sa[ini] = sa->id; }
+  if(!vetor_vertices_sa[ini]){ vetor_vertices_sa[ini] = sa->id; } //ok
   
   return sa; //Retorna a SA nova
 }
@@ -120,7 +120,7 @@ template <typename T> void imprime_saida_trabalho(int nv, int nf, const std::vec
   //imprime o ind da primeira SA das lista de faces
   for (const face<T>* f : lista_faces) {
     if (!f || !f->semi_aresta_inicial) continue;
-    std::cout<<f->semi_aresta_inicial->index<<"\n"; 
+    std::cout<<f->semi_aresta_inicial->id<<"\n"; 
   }
 
   //imprime as SA das lista de faces
