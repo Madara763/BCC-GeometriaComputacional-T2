@@ -19,8 +19,33 @@ Aberta: Caso alguma Semi-Aresta não tenha uma aresta par correspondente.
 Superposta: Caso mais de uma face descreva a mesma região do espaço em seu interior.  
 Não Subdivisão Planar: Caso uma aresta faça fronteira com mais de 2 faces (acaba caindo no caso de Superposta).  
 
+### Estruturas de dados DCEL  
+Para a DCEL é necessário uma estrutura de semi-aresta, descrita em `poligono.hpp`:  
+Versão simplificada da semi-aresta, omite algums atributos usado para construção da DCEL.  
+```
+template <typename T> struct semi_aresta{
+  int id;   // id único da instância
+  int index{0};   //ind do ponto no vetor lido na entrada
+  semi_aresta<T>* prox;   //ponteiro para a proxima semi-aresta na face
+  semi_aresta<T>* ante;   //ponteiro para a semi-aresta anterior na face
+  semi_aresta<T>* par;   //ponteiro para a semi-aresta par a essa, par pertence a outra face
+  face<T>* face_incidente;   //ponteiro para a face ao qual essa semi-aresta pertence
+};
+```
+Versão simplificada da face, omite algums atributos usado para construção da DCEL.  
+```
+template <typename T> struct face{
+  int id;  // id único da instância
+  semi_aresta<T>* semi_aresta_inicial;
+  u_int32_t quant_lados{0};
+};
+```
+
+
+
+
 ### Solução  
-//descrever a logica da coisa
+
 
 # Desenho/
 Contem 2 scripts em python.
