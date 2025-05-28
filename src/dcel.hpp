@@ -57,12 +57,34 @@ semi_aresta<T>* cria_semiaresta(int ini, int fim, face<t_ponto>* face, semi_ares
     sa_anterior->prox = sa;
 
   //Existe um twin  
-  if (mapa_sa.find(par_ho) != mapa_sa.end()) //Verifica se existe uma no lado oposto a essa
+  //Verifica se existe uma no lado oposto a essa, atualiza os dois lados
+  if (mapa_sa.find(par_ho) != mapa_sa.end()) {
     sa->par = mapa_sa[par_ho];
+    mapa_sa[par_ho]->par = sa;
+  }
 
   std::cout<<"Criando uma SA: "<<*sa<<"\n";
   
   return sa; //Retorna a SA nova
+}
+
+template <typename T>
+bool todas_tem_twin(const std::list<face<T>*>& lista_faces) {
+  for (const face<T>* f : lista_faces) {
+    if (!f || !f->semi_aresta_inicial) continue;
+
+    const semi_aresta<T>* sa = f->semi_aresta_inicial;
+    const semi_aresta<T>* atual = sa;
+
+    do {
+      if (!atual->par) {
+        return false;
+      }
+      atual = atual->prox;
+    } while (atual != sa); // ciclo circular
+  }
+
+  return true; // todas têm twin
 }
 
 #endif

@@ -105,12 +105,12 @@ int main(){
 
   }//for i
 
-  //#ifdef DEBUG
+  #ifdef DEBUG
   cout<<"Lista de vertices.\n";
   for(int i=0; i< static_cast<int> (vetor_vertices.size()); i++){
     cout<<"Vertice["<<i<<"] -> "<< vetor_vertices[i]<<"\n";
   }
-
+  
   cout<<"\nLista de Poligonos.\n";
   for(auto it{lista_poligonos.begin()}; it != lista_poligonos.end(); ++it){
     cout<<*(it)<<"\n";
@@ -120,11 +120,27 @@ int main(){
   //face<t_ponto> f;
   //lista_faces.push_back(f);
   //Erro ao percorrer a lista circular de sa-----------------------------------
-  // cout<<"\nLista de faces.\n";
-  // for(auto it{lista_faces.begin()}; it != lista_faces.end(); ++it){
-  //   cout<<*(*(it))<<"\n\n";
-  // }
-  //#endif
+  cout<<"\nLista de faces.\n";
+  for(auto it{lista_faces.begin()}; it != lista_faces.end(); ++it){
+    cout<<*(*(it))<<"\n\n";
+  }
+  #endif
+
+  if(todas_tem_twin<t_ponto>(lista_faces)){
+    cout << "aberta\n";
+    return 0;
+  }
+
+  // verifica se alguma aresta intersecta a sua ou outras faces
+  if(possuem_Intersecao(lista_poligonos, mapa_sa)) {
+    std::cout << "superposta\n";
+    return 0;
+  }
+
+  if(ha_faces_sobrepostas<t_ponto>(lista_poligonos)) {
+    cout << "superposta\n";
+    return 0;
+  }
 
   return 0;
 }

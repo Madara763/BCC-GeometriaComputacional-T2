@@ -8,6 +8,8 @@
 #include <vector>
 #include <iostream>
 #include <cmath>
+#include <unordered_map>
+#include <list> 
 
 #ifndef _POLIGONO_
 #define _POLIGONO_
@@ -152,6 +154,17 @@ template <typename T> T prod_escalar(ponto<T> a, ponto<T> b){
   return a.x * b.x + a.y * b.y;
 }
 
+template <typename T>
+ponto<T> calcula_centroide(const poligono<T>& poly) {
+  T cx = 0, cy = 0;
+  for (const auto& p : poly.vertices) {
+    cx += p.x;
+    cy += p.y;
+  }
+  size_t n = poly.vertices.size();
+  return { cx / n, cy / n };
+}
+
 // ================================= Funcoes gerais DCEL ==================================
 
 
@@ -291,6 +304,7 @@ template <typename T> bool eh_simplesBF(const poligono<T>& pol) {
     for(int j = i + 1; j < static_cast<int>( arestas.size()); ++j) {
 
       aresta<T> intersecao;
+      // se forem conseguintes
       if((j == i + 1) || (i == 0 && j == static_cast<int> (arestas.size() - 1))){
         if(tem_Intersecao(arestas[i], arestas[j], &intersecao) == 2) 
           return false;
@@ -304,6 +318,98 @@ template <typename T> bool eh_simplesBF(const poligono<T>& pol) {
   }
     return true;
 }
+
+// Verifica se algum polígono na lista possui interseção com arestas já existentes no mapa
+template <typename T>
+bool possuem_Intersecao(const std::list<poligono<T>> &lista_poligonos,
+                                   const std::unordered_map<std::pair<int, int>, semi_aresta<T>*, pair_hash> &mapa_sa) {
+  for (const auto &poli : lista_poligonos) {
+    const auto &verts = poli.vertices;
+    int n = verts.size();
+
+    for (int i = 0; i < n; ++i) {
+      ponto<T> p1 = verts[i];
+      ponto<T> p2 = verts[(i + 1) % n]; // Fecha o polígono
+
+      aresta<T> aresta_ref{p1, p2};
+
+      for (const auto& par : mapa_sa) {
+        semi_aresta<T>* sa = par.second;
+        if (!sa || !sa->prox) continue;
+
+        aresta<T> a{sa->ini, sa->prox->ini};
+
+        // Verifica se a aresta já existe no mapa
+        if (a.ini == aresta_ref.ini && a.fim == aresta_ref.fim)
+          return true;
+
+        aresta<T> intersecao;
+        int tipo = tem_Intersecao(aresta_ref, a, &intersecao);
+
+        if (tipo == 2) {
+          return true;
+        }
+
+        if (tipo == 1) {
+          // Verifica se a intersecção não ocorre nas pontas
+          if (!(intersecao.ini == a.ini || intersecao.ini == a.fim ||
+                intersecao.ini == aresta_ref.ini || intersecao.ini == aresta_ref.fim)) {
+            return true;
+          }
+        }
+      } // fim do for mapa_sa
+    } // fim do for de arestas do polígono
+  } // fim do for de polígonos
+
+  return false;
+}
+
+template <typename T>
+bool ha_faces_sobrepostas(const std::list<poligono<T>>& lista_poligonos) {
+	for(auto it1 = lista_poligonos.begin(); it1 != lista_poligonos.end(); ++it1) {
+		for(auto it2 = lista_poligonos.begin(); it2 != lista_poligonos.end(); ++it2) {
+			if(it1 == it2) continue;
+
+			const poligono<T>& polA = *it1;
+			const poligono<T>& polB = *it2;
+
+			ponto<T> centroB = calcula_centroide(polB);
+			ponto<T> centroA = calcula_centroide(polA);
+
+			// Caso 1: polB está dentrode  polA e polA é anti-horário (face externa)
+			if(eh_anti_horario(polA) && raycast(centroB, polA)) {
+				return true;
+			}
+
+			// Caso 2: polA está dentro de polB e polB é horária (buraco interno)
+			if(!eh_anti_horario(polB) && raycast(centroA, polB)) {
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+template <typename T>
+T area_assinada(const poligono<T>& p) {
+    T area = 0;
+    const auto& vertices = p.vertices;
+    int n = vertices.size();
+
+    for (int i = 0; i < n; ++i) {
+        const ponto<T>& p1 = vertices[i];
+        const ponto<T>& p2 = vertices[(i + 1) % n];  // Fecha o polígono
+        area += (p1.x * p2.y - p2.x * p1.y);
+    }
+
+    return area / 2;
+}
+
+template <typename T>
+bool eh_anti_horario(const poligono<T>& p) {
+    return area_assinada(p) > 0;
+}
+
 
 // Classifica um poligono pelos tipos definidos no ENUM tipo_p
 template <typename T> int tipo_poligono(const poligono<T>& pol){
