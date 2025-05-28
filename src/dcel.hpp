@@ -49,7 +49,7 @@ semi_aresta<T>* cria_semiaresta(int ini, int fim, face<t_ponto>* face, semi_ares
     return NULL;
   }
 
-  sa->index = ini;
+  sa->index = (ini+1);        //Indice no ponto inicial no vv
   sa->ini = vv[ini];          //Indice em vv do ponto inicial dessa sa
   sa->ante = sa_anterior;     //Semi-Aresta anterior a essa nova
   sa->face_incidente = face;  //Ponteiro para a face a qual essa SA pertence

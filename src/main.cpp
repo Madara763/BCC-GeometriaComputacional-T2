@@ -69,7 +69,7 @@ int main(){
         eh_primeira_sa = false;
         sa_inicial = cria_semiaresta<t_ponto>(v_ante, v, f, nullptr, mapa_sa, vetor_vertices, &nsp, vetor_vertices_sa);
         if(!sa_inicial){
-          switch (nsp){
+          switch (nsp){ //Verifica flag de retorno da criacao
           case 1:
             cout<<"não subdivisão planar\n";
             break;
@@ -91,7 +91,7 @@ int main(){
       }
       else{
         sa_aux = cria_semiaresta<t_ponto>(v_ante, v, f, sa_anterior, mapa_sa, vetor_vertices, &nsp, vetor_vertices_sa);
-        if(!sa_aux){
+        if(!sa_aux){ //Verifica flag de retorno da criacao
           switch (nsp){
           case 1:
             cout<<"não subdivisão planar\n";
@@ -117,7 +117,7 @@ int main(){
     //Conecta com o primeiro vertice da face
     sa_aux = cria_semiaresta<t_ponto>(v_ante, v_inicial, f, sa_anterior, mapa_sa, vetor_vertices, &nsp, vetor_vertices_sa);
     if(!sa_aux){
-      switch (nsp){
+      switch (nsp){ //Verifica flag de retorno da criacao
       case 1:
         cout << "não subdivisão planar\n";
         break;
@@ -183,6 +183,7 @@ int main(){
     return 0;
   }
   
+  //Impressao da saida conforme espacificado no enunciado
   imprime_saida_trabalho(nVertices, nFaces, vetor_vertices, vetor_vertices_sa, lista_faces);
 
   return 0;

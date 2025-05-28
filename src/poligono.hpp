@@ -127,7 +127,7 @@ template<typename T> std::ostream& operator<<(std::ostream& os, const semi_arest
   (sa.par == nullptr) ? os<<"Twin: nulo\n" : os<<"Twin: "<<sa.par<<"\n"; 
   (sa.face_incidente == nullptr) ? os<<"Face: nula\n" : os<<"Face: "<<sa.face_incidente<<"\n"; 
   #else
-  os << sa.index+1 <<" "<<sa.par->id<<" "<<sa.face_incidente->id<<" "<<sa.prox->id<<" "<<sa.ante->id; //------------------------------- tem um +1 aqui
+  os << sa.index <<" "<<sa.par->id<<" "<<sa.face_incidente->id<<" "<<sa.prox->id<<" "<<sa.ante->id;
   #endif
   return os;
 }
@@ -414,8 +414,7 @@ bool ha_faces_sobrepostas(const std::list<poligono<T>>& lista_poligonos) {
 	return false;
 }
 
-template <typename T>
-T area_assinada(const poligono<T>& p) {
+template <typename T> T area_assinada(const poligono<T>& p) {
     T area = 0;
     const auto& vertices = p.vertices;
     int n = vertices.size();
@@ -429,8 +428,7 @@ T area_assinada(const poligono<T>& p) {
     return area / 2;
 }
 
-template <typename T>
-bool eh_anti_horario(const poligono<T>& p) {
+template <typename T> bool eh_anti_horario(const poligono<T>& p) {
     return area_assinada(p) > 0;
 }
 
