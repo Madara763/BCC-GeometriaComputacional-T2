@@ -24,7 +24,7 @@
 template <typename T>
 semi_aresta<T>* cria_semiaresta(int ini, int fim, face<t_ponto>* face, semi_aresta<t_ponto>* sa_anterior,
                                 std::unordered_map<std::pair<int, int>, semi_aresta<t_ponto>*, pair_hash>& mapa_sa,
-                                const std::vector<ponto<t_ponto>>& vv, bool* nsp){
+                                const std::vector<ponto<t_ponto>>& vv, bool* nsp, std::vector<semi_aresta<t_ponto>*>& vetor_vertices_sa){
   
   //Par dos vertices
   ini--; fim--; //ajusta de ordem de vertice para indice no vetor
@@ -53,6 +53,9 @@ semi_aresta<T>* cria_semiaresta(int ini, int fim, face<t_ponto>* face, semi_ares
   sa->face_incidente = face;  //Ponteiro para a face a qual essa SA pertence
   mapa_sa[par_ah] = sa;       //Adiciona no mapa de Semi_Aresta p/ quando criar o twin dessa poder achar essa
 
+  //Se nao tem nenhuma SA registrada como inicio nesse vertice, adiciona a primeira
+  if(!vetor_vertices_sa[ini]){ vetor_vertices_sa[ini] = sa; }
+
   //Se existe um anterior, adiciona esse como proximo do anterior 
   //Se for o primeiro sa_anterior eh nullptr
   if(sa_anterior) 
@@ -63,6 +66,14 @@ semi_aresta<T>* cria_semiaresta(int ini, int fim, face<t_ponto>* face, semi_ares
   if (mapa_sa.find(par_ho) != mapa_sa.end()) {
     sa->par = mapa_sa[par_ho];
     mapa_sa[par_ho]->par = sa;
+
+    //Caiu aqui pq a aresta vai e vem na mesma face
+    //Nao subdivisao planar
+    if(mapa_sa[par_ho]->face_incidente == sa->face_incidente){
+      *nsp = true; //retorna nao subdivisao planar
+      return NULL; //nao cria a aresta
+    }
+
   }
   
   #ifdef DEBUG
@@ -87,5 +98,7 @@ template <typename T> bool todas_tem_twin(const std::list<face<T>*>& lista_faces
 
   return true; // todas têm twin
 }
+
+void imprime
 
 #endif

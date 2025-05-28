@@ -67,7 +67,7 @@ int main(){
       if(eh_primeira_sa){
 
         eh_primeira_sa = false;
-        sa_inicial = cria_semiaresta<t_ponto>(v_ante, v, f, nullptr, mapa_sa, vetor_vertices, &nsp);
+        sa_inicial = cria_semiaresta<t_ponto>(v_ante, v, f, nullptr, mapa_sa, vetor_vertices, &nsp, vetor_vertices_sa);
         if(!sa_inicial){
           if(nsp){
             cout<<"não subdivisão planar\n";
@@ -83,7 +83,7 @@ int main(){
 
       }
       else{
-        sa_aux = cria_semiaresta<t_ponto>(v_ante, v, f, sa_anterior, mapa_sa, vetor_vertices, &nsp);
+        sa_aux = cria_semiaresta<t_ponto>(v_ante, v, f, sa_anterior, mapa_sa, vetor_vertices, &nsp, vetor_vertices_sa);
         if(!sa_aux){
           if(nsp){
             cout<<"não subdivisão planar\n";
@@ -101,7 +101,7 @@ int main(){
 
     //Fecha os ciclos
     //Conecta com o primeiro vertice da face
-    sa_aux = cria_semiaresta<t_ponto>(v_ante, v_inicial, f, sa_anterior, mapa_sa, vetor_vertices, &nsp);
+    sa_aux = cria_semiaresta<t_ponto>(v_ante, v_inicial, f, sa_anterior, mapa_sa, vetor_vertices, &nsp, vetor_vertices_sa);
     if(!sa_aux){
       if(nsp){
         cout<<"não subdivisão planar\n";
@@ -157,6 +157,6 @@ int main(){
   //   cout << "superposta\n";
   //   return 0;
   // }
-
+  
   return 0;
 }
