@@ -339,8 +339,10 @@ bool possuem_Intersecao(const std::list<poligono<T>> &lista_poligonos,
         aresta<T> a{sa->ini, sa->prox->ini};
 
         // Verifica se a aresta já existe no mapa
-        if (a.ini == aresta_ref.ini && a.fim == aresta_ref.fim)
-          return true;
+		    if((a.ini == aresta_ref.ini && a.fim == aresta_ref.fim) ||
+        (a.ini == aresta_ref.fim && a.fim == aresta_ref.ini)){
+			    continue;
+        }
 
         aresta<T> intersecao;
         int tipo = tem_Intersecao(aresta_ref, a, &intersecao);
@@ -376,13 +378,10 @@ bool ha_faces_sobrepostas(const std::list<poligono<T>>& lista_poligonos) {
 			ponto<T> centroA = calcula_centroide(polA);
 
 			// Caso 1: polB está dentrode  polA e polA é anti-horário (face externa)
-			if(eh_anti_horario(polA) && raycast(centroB, polA)) {
-				return true;
-			}
-
-			// Caso 2: polA está dentro de polB e polB é horária (buraco interno)
-			if(!eh_anti_horario(polB) && raycast(centroA, polB)) {
-				return true;
+			if(eh_anti_horario(polA) && eh_anti_horario(polB)) {
+				if(raycast(centroB, polA) || raycast(centroA, polB)) {
+					return true;
+				}
 			}
 		}
 	}

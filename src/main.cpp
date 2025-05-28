@@ -137,8 +137,12 @@ int main(){
     sa_inicial->ante = sa_aux;         // Primeira SA aponta de volta
     f->quant_lados ++;
 
-    //Poligonos
+    // Adiciona o último vértice (v_inicial) para fechar o polígono
     p.vertices.push_back(vetor_vertices[v_ante - 1]);
+
+    // FECHA O CICLO CIRCULAR:
+    sa_aux->prox = sa_inicial;         // Última SA aponta para a primeira
+    sa_inicial->ante = sa_aux;         // Primeira SA aponta de volta
 
     //Adiciona face e poligono nas listas
     lista_faces.push_back(f);  
@@ -169,15 +173,15 @@ int main(){
   }
 
   // verifica se alguma aresta intersecta a sua ou outras faces
-  // if(possuem_Intersecao(lista_poligonos, mapa_sa)) {
-  //   cout << "superposta\n";
-  //   return 0;
-  // }
+  if(possuem_Intersecao(lista_poligonos, mapa_sa)) {
+    cout << "superposta\n";
+    return 0;
+  }
 
-  // if(ha_faces_sobrepostas<t_ponto>(lista_poligonos)) {
-  //   cout << "superposta\n";
-  //   return 0;
-  // }
-
+  if(ha_faces_sobrepostas<t_ponto>(lista_poligonos)) {
+    cout << "superposta\n";
+    return 0;
+  }
+  
   return 0;
 }
