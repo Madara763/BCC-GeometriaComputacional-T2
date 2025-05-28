@@ -39,7 +39,7 @@ int main(){
   unordered_map<pair<int, int>, semi_aresta<t_ponto>*, pair_hash> mapa_sa;
 
   int v, v_ante, v_inicial;
-  bool eh_primeira_sa;
+  bool eh_primeira_sa, nsp;
   string linha;
   for(int i=0; i<nFaces; i++){ // Le as faces
 
@@ -67,8 +67,12 @@ int main(){
       if(eh_primeira_sa){
 
         eh_primeira_sa = false;
-        sa_inicial = cria_semiaresta<t_ponto>(v_ante, v, f, nullptr, mapa_sa, vetor_vertices);
-        if(!sa_inicial){
+        sa_inicial = cria_semiaresta<t_ponto>(v_ante, v, f, nullptr, mapa_sa, vetor_vertices, &nsp);
+        if(!sa_aux){
+          if(nsp){
+            cout<<"não subdivisão planar\n";
+            return 0;
+          }
           perror("Erro ao montar face no main()\n");
           return 1;
         }
@@ -79,8 +83,12 @@ int main(){
 
       }
       else{
-        sa_aux = cria_semiaresta<t_ponto>(v_ante, v, f, sa_anterior, mapa_sa, vetor_vertices);
+        sa_aux = cria_semiaresta<t_ponto>(v_ante, v, f, sa_anterior, mapa_sa, vetor_vertices, &nsp);
         if(!sa_aux){
+          if(nsp){
+            cout<<"não subdivisão planar\n";
+            return 0;
+          }
           perror("Erro ao montar face no main()\n");
           return 1;
         }
@@ -89,15 +97,27 @@ int main(){
       }
 
       v_ante=v;
-    }
+    }//while
 
+    //Fecha os ciclos
     //Conecta com o primeiro vertice da face
-    sa_aux = cria_semiaresta<t_ponto>(v_ante, v_inicial, f, sa_anterior, mapa_sa, vetor_vertices);
+    sa_aux = cria_semiaresta<t_ponto>(v_ante, v_inicial, f, sa_anterior, mapa_sa, vetor_vertices, &nsp);
     if(!sa_aux){
+      if(nsp){
+        cout<<"não subdivisão planar\n";
+        return 0;
+      }
       perror("Erro ao montar face no main()\n");
       return 1;
     }
+    
+    //Faces
+    sa_aux->prox = sa_inicial;         // Última SA aponta para a primeira
+    sa_inicial->ante = sa_aux;         // Primeira SA aponta de volta
     f->quant_lados ++;
+
+    //Poligonos
+    p.vertices.push_back(vetor_vertices[v_ante - 1]);
 
     //Adiciona face e poligono nas listas
     lista_faces.push_back(f);  
@@ -126,7 +146,7 @@ int main(){
   }
   #endif
 
-  if(todas_tem_twin<t_ponto>(lista_faces)){
+  if(!todas_tem_twin<t_ponto>(lista_faces)){
     cout << "aberta\n";
     return 0;
   }

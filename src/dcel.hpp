@@ -19,11 +19,12 @@
 //sa_anterior eh a Semi-Aresta anterio a essa nova na face
 //Mapa_sa eh um map que usa (ini, fim) como chaves para identificar as arestas com hashing
 //mapa_sa[ini,fim] eh pra ser diferente de mapa_sa[fim,ini]
+//nsp eh um booleano que indica que estou criando uma SA pela segunda vez, ou seja, existe uma face usando a mesma regiao do espaco que outra, faz parte do retorno
 //Retorno: ponteiro para a sa criada e preenchida ou null em caso de erro
 template <typename T>
 semi_aresta<T>* cria_semiaresta(int ini, int fim, face<t_ponto>* face, semi_aresta<t_ponto>* sa_anterior,
                                 std::unordered_map<std::pair<int, int>, semi_aresta<t_ponto>*, pair_hash>& mapa_sa,
-                                const std::vector<ponto<t_ponto>>& vv){
+                                const std::vector<ponto<t_ponto>>& vv, bool* nsp){
   
   //Par dos vertices
   ini--; fim--; //ajusta de ordem de vertice para indice no vetor
@@ -36,7 +37,8 @@ semi_aresta<T>* cria_semiaresta(int ini, int fim, face<t_ponto>* face, semi_ares
   if (mapa_sa.find(par_ah) != mapa_sa.end()){  
     //erro no bagulho, n devia estar aqui
     //Tentendo usar a mesma SA em outra face
-    perror("Tentando adicionar a mesma SA uma segunda vez.\n");
+    //Ativa a flag de que caiu em uma NSP
+    *nsp = true; 
     return NULL;
   }
 
@@ -62,14 +64,15 @@ semi_aresta<T>* cria_semiaresta(int ini, int fim, face<t_ponto>* face, semi_ares
     sa->par = mapa_sa[par_ho];
     mapa_sa[par_ho]->par = sa;
   }
-
-  std::cout<<"Criando uma SA: "<<*sa<<"\n";
   
+  #ifdef DEBUG
+  std::cout<<"Criando uma SA em cria_semiaresta(): "<<*sa<<"\n";
+  #endif
+
   return sa; //Retorna a SA nova
 }
 
-template <typename T>
-bool todas_tem_twin(const std::list<face<T>*>& lista_faces) {
+template <typename T> bool todas_tem_twin(const std::list<face<T>*>& lista_faces) {
   for (const face<T>* f : lista_faces) {
     if (!f || !f->semi_aresta_inicial) continue;
 
@@ -77,9 +80,7 @@ bool todas_tem_twin(const std::list<face<T>*>& lista_faces) {
     const semi_aresta<T>* atual = sa;
 
     do {
-      if (!atual->par) {
-        return false;
-      }
+      if (!atual->par) { return false; }
       atual = atual->prox;
     } while (atual != sa); // ciclo circular
   }
