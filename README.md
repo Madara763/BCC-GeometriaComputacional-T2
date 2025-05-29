@@ -45,7 +45,7 @@ template <typename T> struct face{
 
 
 ### Solução  
-
+Descrita no relatório.
 
 # Desenho/
 Contem 2 scripts em python.
